@@ -1,0 +1,182 @@
+import 'package:flutter/material.dart';
+
+import 'package:it/Models/lecture.dart';
+
+class StudentScreen extends StatefulWidget {
+  @override
+  _StudentScreenState createState() => _StudentScreenState();
+}
+
+class _StudentScreenState extends State<StudentScreen> {
+  TextEditingController codeController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+
+  bool isAttendanceSuccessful = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final Student user = ModalRoute.of(context)!.settings.arguments as Student;
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.popAndPushNamed(context, '/');
+              },
+              icon: Icon(Icons.logout_rounded),
+              color: Colors.black,
+            )
+          ],
+          backgroundColor: Color.fromARGB(255, 36, 132, 83),
+          title: Text(
+            user.get_name(),
+            style: TextStyle(fontSize: 25),
+          ),
+          centerTitle: true,
+          bottom: TabBar(
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.white,
+            indicatorColor: Colors.black,
+            tabs: [
+              Tab(
+                text: 'المحاضرات الحالية',
+              ),
+              Tab(
+                text: 'تعديل المواد المسجلة',
+              ),
+              // Tab(),
+            ],
+          ),
+        ),
+        body: TabBarView(children: [
+          Center(
+            child: Text("لا يوجد محاضارات في الوقت الحالي"),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0, bottom: 10),
+                child: Text("المواد المسجلة"),
+              ),
+              Divider(
+                thickness: 3.0,
+                indent: 20,
+                endIndent: 20,
+                color: Color.fromARGB(255, 36, 132, 83),
+              ),
+              Expanded(
+                  flex: 1,
+                  child: ListView.builder(
+                      itemCount: user.get_subject().length,
+                      itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 20.0, 10, 0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  // color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 36, 132, 83),
+                                    width: 2.0,
+                                  )),
+                              child: ListTile(
+                                leading: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.more_horiz),
+                                  color: Colors.black,
+                                ),
+                                title:
+                                    Text(user.get_subject()[index].get_name()),
+                                subtitle: Text(user
+                                    .get_subject()[index]
+                                    .get_name_master()
+                                    .get_name()),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text(
+                                                "تأكيد الحذف",
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 20),
+                                              ),
+                                              content: Text(
+                                                textAlign: TextAlign.center,
+                                                'هل انت متأكد من حذف مادة \n(${user.get_subject()[index].get_name()})\nالرجاء عدم حذف اي مادة من موادك المسجل فيها في التطبيق الا بعد حذها من منظومة الكلية ',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 18),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text(
+                                                      'الغاء',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 18),
+                                                    )),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      user.get_subject().remove(
+                                                          user.get_subject()[
+                                                              index]);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text(
+                                                      "حذف",
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 18),
+                                                    )),
+                                              ],
+                                            );
+                                          });
+                                    });
+                                  },
+                                  icon: Icon(Icons.delete_forever_rounded),
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ))),
+              Divider(
+                thickness: 3.0,
+                indent: 20,
+                endIndent: 20,
+                color: Color.fromARGB(255, 36, 132, 83),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  padding: EdgeInsets.only(right: 20, left: 20),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 9, 82, 32),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "اضافة مادة جديدة",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+              ),
+            ],
+          )
+        ]),
+      ),
+    );
+  }
+}
