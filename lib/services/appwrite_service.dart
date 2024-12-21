@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:it/Models/subject.dart';
 
 import '../Models/Master.dart';
 import '../Models/student.dart';
@@ -49,5 +50,20 @@ class AppwriteService {
     return Master(map["phoneNumber"], map["name"], map["password"]);
   }
 
-  
+  Future<List<Subject>> getSubject() async {
+    Databases databases = Databases(client);
+    DocumentList result = await databases.listDocuments(
+      databaseId: '676317fb003556cd730a',
+      collectionId: '676706c9000c2d17447b',
+    );
+    List<Subject> res = [];
+    var temp, temp_map;
+    for (var i = 0; i < result.documents.length; i++) {
+      temp_map = result.documents[i].toMap();
+      temp = Subject(temp_map['code'], temp_map['name'], temp_map['numUnites'],
+          temp_map['nameMaster']);
+      res.add(temp);
+    }
+    return res;
+  }
 }
