@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../Models/lecture.dart';
+import '../Models/student.dart';
 
 class RegisterPage extends StatelessWidget {
   TextEditingController _nameControllaer = TextEditingController();

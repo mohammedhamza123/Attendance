@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:it/Models/lecture.dart';
 
 import '../Models/Master.dart';
 import '../Models/student.dart';
@@ -49,5 +50,22 @@ class AppwriteService {
     return Master(map["phoneNumber"], map["name"], map["password"]);
   }
 
-  
+////
+Future<void> post_lectuer(Lecture lec) async {
+    Databases databases = Databases(client);
+    Document result = await databases.createDocument(
+    databaseId: '676317fb003556cd730a',
+    collectionId: '67632a270029ffbe3e73',
+    documentId: '',
+    data: {
+      'ID':lec.id,
+      'hallNumber':lec.hallNumber,
+      'code':lec.code,
+      'master_master':lec.name_master,
+      'name_subject':lec.name_subject,
+      'titel':lec.titel,
+
+    }
+    );
+  }  
 }
