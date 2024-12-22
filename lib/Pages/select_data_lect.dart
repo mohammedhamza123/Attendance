@@ -3,12 +3,14 @@ import 'package:it/Models/lecture.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import '../Models/subject.dart';
+
 class carts extends StatefulWidget {
   const carts({
     super.key,
     required this.sub,
   });
-  final subject sub;
+  final Subject sub;
   @override
   State<carts> createState() => _MyWidgetState();
 }
@@ -146,7 +148,7 @@ class _MyWidgetState extends State<carts> {
                       onPressed: () {
                         lectureCode = Random().nextInt(900000) + 100000;
                         Lecture lec = Lecture(
-                            int.parse(_numLectureController.text),
+                            // int.parse(_numLectureController.text),
                             lectureCode,
                             selectedValue ?? '',
                             widget.sub.get_name(),

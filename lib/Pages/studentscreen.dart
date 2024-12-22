@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:it/Models/lecture.dart';
 
+import '../Models/student.dart';
+
 class StudentScreen extends StatefulWidget {
   @override
   _StudentScreenState createState() => _StudentScreenState();

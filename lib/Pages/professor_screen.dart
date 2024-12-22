@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
+import '../Models/Master.dart';
 import 'select_data_lect.dart';
 import '../Models/lecture.dart';
 

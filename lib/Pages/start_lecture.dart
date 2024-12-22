@@ -38,28 +38,28 @@ class _StartLectureState extends State<StartLecture> {
             child: Column(
               children: [
                 Text(
-                  'اسم المادة : ' + lec.name_subject,
+                  'اسم المادة : ' + lec.subjectName,
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'اسم المحاضر : ' + lec.name_master,
+                  'اسم المحاضر : ' + lec.masterName,
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
-                  'رقم المحاضرة : ' + lec.id.toString(),
-                  style: TextStyle(fontSize: 18),
-                ),
+                // Text(
+                //   'رقم المحاضرة : ' + lec.id.toString(),
+                //   style: TextStyle(fontSize: 18),
+                // ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'عنوان المحاضرة : ' + lec.titel,
+                  'عنوان المحاضرة : ' + lec.title,
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(

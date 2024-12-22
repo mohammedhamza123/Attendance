@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:it/Models/lecture.dart';
 
+import '../Models/student.dart';
+import '../Models/subject.dart';
+
 class selectSubjectesStudent extends StatefulWidget {
   const selectSubjectesStudent({super.key});
 
@@ -10,7 +13,7 @@ class selectSubjectesStudent extends StatefulWidget {
 }
 
 class _selectSubjectesState extends State<selectSubjectesStudent> {
-  final Map<subject, bool> selectedCourses = {};
+  final Map<Subject, bool> selectedCourses = {};
   @override
   Widget build(BuildContext context) {
     final Student user = ModalRoute.of(context)!.settings.arguments as Student;
@@ -40,7 +43,7 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
           ),
           Expanded(
             child: ListView(
-              children: Subjects.map((course) {
+              children: subjects.map((course) {
                 return CheckboxListTile(
                   checkColor: Colors.white,
                   activeColor: Color.fromARGB(255, 36, 132, 83),
@@ -70,7 +73,7 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             child: TextButton(
               onPressed: () {
-                List<subject> chosenCourses = selectedCourses.entries
+                List<Subject> chosenCourses = selectedCourses.entries
                     .where((entry) => entry.value)
                     .map((entry) => entry.key)
                     .toList();

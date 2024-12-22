@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../Models/lecture.dart';
+import '../Models/student.dart';
 
 class RegisterPage extends StatelessWidget {
   TextEditingController _nameControllaer = TextEditingController();
   TextEditingController _numControllaer = TextEditingController();
   TextEditingController _passwordControllaer = TextEditingController();
   TextEditingController _password2Controllaer = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +130,7 @@ class RegisterPage extends StatelessWidget {
                             if (_passwordControllaer.text ==
                                 _password2Controllaer.text) {
                               Student S = Student(
-                                  mastresList.length,
+                                  // masterList.length,
                                   int.parse(_numControllaer.text),
                                   _nameControllaer.text,
                                   _passwordControllaer.text);
