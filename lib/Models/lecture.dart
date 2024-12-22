@@ -4,6 +4,7 @@ import 'package:it/Models/student.dart';
 import 'package:it/Models/subject.dart';
 
 class Lecture {
+  int id;
   int code;
   String hallNumber;
   String subjectName;
@@ -11,7 +12,7 @@ class Lecture {
   String masterName;
   List<Student> student = [];
 
-  Lecture(this.code, this.hallNumber, this.subjectName, this.masterName,
+  Lecture(this.id,this.code, this.hallNumber, this.subjectName, this.masterName,
       this.title);
 }
 

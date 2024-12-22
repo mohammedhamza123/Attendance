@@ -148,7 +148,7 @@ class _MyWidgetState extends State<carts> {
                       onPressed: () {
                         lectureCode = Random().nextInt(900000) + 100000;
                         Lecture lec = Lecture(
-                            // int.parse(_numLectureController.text),
+                            int.parse(_numLectureController.text),
                             lectureCode,
                             selectedValue ?? '',
                             widget.sub.get_name(),

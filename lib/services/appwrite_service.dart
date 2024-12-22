@@ -8,7 +8,11 @@ import '../Models/student.dart';
 
 class AppwriteService {
   static final AppwriteService _singleton = AppwriteService._internal();
-
+  static const dbId = "676317fb003556cd730a";
+  static const masterCollectionId = "67632a270029ffbe3e73";
+  static const studentCollectionId = "67631c2400321d8702d1";
+  static const lectureCollectionId = '676706130032336e26f7';
+  static const subjectCollectionId = '676706c9000c2d17447b';
   factory AppwriteService() {
     return _singleton;
   }
@@ -18,6 +22,7 @@ class AppwriteService {
   Client client = Client()
       .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
       .setProject('67631599002693c1b375');
+
   Future<void> Login() async {
     Account account = Account(client);
     Session result = await account.createAnonymousSession();
@@ -26,8 +31,8 @@ class AppwriteService {
   Future<Student> getStudent(int univNum) async {
     Databases databases = Databases(client);
     DocumentList result = await databases.listDocuments(
-      databaseId: '676317fb003556cd730a',
-      collectionId: '67631c2400321d8702d1',
+      databaseId: dbId,
+      collectionId: studentCollectionId,
       queries: [
         //this is filter
         Query.equal("univNum", [univNum])
@@ -40,8 +45,8 @@ class AppwriteService {
   Future<Master> getMaster(int phoneNumber) async {
     Databases databases = Databases(client);
     DocumentList result = await databases.listDocuments(
-      databaseId: '676317fb003556cd730a',
-      collectionId: '67632a270029ffbe3e73',
+      databaseId: dbId,
+      collectionId: masterCollectionId,
       queries: [
         //this is filter
         Query.equal("phoneNumber", [phoneNumber])
@@ -52,28 +57,27 @@ class AppwriteService {
   }
 
 ////
-Future<void> post_lectuer(Lecture lec) async {
+  Future<void> postLecture(Lecture lec) async {
     Databases databases = Databases(client);
     Document result = await databases.createDocument(
-    databaseId: '676317fb003556cd730a',
-    collectionId: '67632a270029ffbe3e73',
-    documentId: '',
-    data: {
-      'ID':lec.id,
-      'hallNumber':lec.hallNumber,
-      'code':lec.code,
-      'master_master':lec.name_master,
-      'name_subject':lec.name_subject,
-      'titel':lec.titel,
-
-    }
-    );
+        databaseId: dbId,
+        collectionId: lectureCollectionId,
+        documentId: '',
+        data: {
+          'ID': lec.id,
+          'hallNumber': lec.hallNumber,
+          'code': lec.code,
+          'master_master': lec.masterName,
+          'name_subject': lec.subjectName,
+          'titel': lec.title,
+        });
   }
+
   Future<List<Subject>> getSubject() async {
     Databases databases = Databases(client);
     DocumentList result = await databases.listDocuments(
-      databaseId: '676317fb003556cd730a',
-      collectionId: '676706c9000c2d17447b',
+      databaseId: dbId,
+      collectionId: subjectCollectionId,
     );
     List<Subject> res = [];
     var temp, temp_map;
