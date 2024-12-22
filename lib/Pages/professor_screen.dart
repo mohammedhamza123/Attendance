@@ -4,7 +4,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import '../Models/Master.dart';
 import 'select_data_lect.dart';
-import '../Models/lecture.dart';
+
 
 class MasterScreen extends StatefulWidget {
   @override
