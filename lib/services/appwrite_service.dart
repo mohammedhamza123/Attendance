@@ -13,6 +13,7 @@ class AppwriteService {
   static const studentCollectionId = "67631c2400321d8702d1";
   static const lectureCollectionId = '676706130032336e26f7';
   static const subjectCollectionId = '676706c9000c2d17447b';
+
   factory AppwriteService() {
     return _singleton;
   }
@@ -20,17 +21,26 @@ class AppwriteService {
   AppwriteService._internal();
 
   Client client = Client()
-      .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+      .setEndpoint('http://cloud.appwrite.io/v1') // Your API Endpoint
       .setProject('67631599002693c1b375');
 
   Future<void> Login() async {
     Account account = Account(client);
-    Session result = await account.createAnonymousSession();
+    await account.createAnonymousSession();
+  }
+
+  Future<void> LoginwithEmail() async {
+    Account account = Account(client);
+
+     await account.createEmailPasswordSession(
+      email: 'useremail@email.com',
+      password: '123456789faster',
+    );
   }
 
   Future<Student> getStudent(int univNum) async {
     Databases databases = Databases(client);
-    DocumentList result = await databases.listDocuments(
+    final result = await databases.listDocuments(
       databaseId: dbId,
       collectionId: studentCollectionId,
       queries: [
@@ -38,7 +48,7 @@ class AppwriteService {
         Query.equal("univNum", [univNum])
       ],
     );
-    final map = result.documents.first.toMap();
+    final map = result.documents.first.toMap()["data"];
     return Student(map["univNum"], map["name"], map["password"]);
   }
 
@@ -52,7 +62,7 @@ class AppwriteService {
         Query.equal("phoneNumber", [phoneNumber])
       ],
     );
-    final map = result.documents.first.toMap();
+    final map = result.documents.first.toMap()["data"];
     return Master(map["phoneNumber"], map["name"], map["password"]);
   }
 
@@ -66,10 +76,11 @@ class AppwriteService {
         data: {
           'ID': lec.id,
           'hallNumber': lec.hallNumber,
-          'code': lec.code,
-          'master_master': lec.masterName,
+          'code_lectuer': lec.code,
+          'name_master': lec.masterName,
           'name_subject': lec.subjectName,
           'titel': lec.title,
+          'students': []
         });
   }
 

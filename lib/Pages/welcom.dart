@@ -76,9 +76,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: TextButton(
                 onPressed: () {
                   if (typ == 'طالب') {
-                    Navigator.pushNamed(context, '/Login-Student');
+                    Navigator.pushNamed(context, '/Login',
+                        arguments: {"acc": "student"});
                   } else if (typ == 'عضو هيئة تدريس') {
-                    Navigator.pushNamed(context, '/Login-Master');
+                    Navigator.pushNamed(context, '/Login',
+                        arguments: {"acc": "master"});
                   }
                 },
                 child: Text(
@@ -106,9 +108,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: TextButton(
               onPressed: () {
                 if (typ == 'طالب') {
-                  Navigator.pushNamed(context, '/Reg-Student');
+                  Navigator.pushNamed(context, '/Register',
+                      arguments: {"acc": "student"});
                 } else if (typ == 'عضو هيئة تدريس') {
-                  Navigator.pushNamed(context, '/Reg-Master');
+                  Navigator.pushNamed(context, '/Register',
+                      arguments: {"acc": "master"});
                 }
               },
               child: Text(
