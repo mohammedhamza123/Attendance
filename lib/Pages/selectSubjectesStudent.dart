@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:it/Models/lecture.dart';
+import 'package:it/services/appwrite_service.dart';
 
 import '../Models/student.dart';
 import '../Models/subject.dart';
@@ -14,6 +15,7 @@ class selectSubjectesStudent extends StatefulWidget {
 
 class _selectSubjectesState extends State<selectSubjectesStudent> {
   final Map<Subject, bool> selectedCourses = {};
+
   @override
   Widget build(BuildContext context) {
     final Student user = ModalRoute.of(context)!.settings.arguments as Student;
@@ -42,23 +44,40 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
             thickness: 2,
           ),
           Expanded(
-            child: ListView(
-              children: subjects.map((course) {
-                return CheckboxListTile(
-                  checkColor: Colors.white,
-                  activeColor: Color.fromARGB(255, 36, 132, 83),
-                  title: Text(course.get_name()),
-                  subtitle: Text(course.get_name_master().get_name()),
-                  value: selectedCourses[course] ?? false,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      selectedCourses[course] = value ?? false;
-                    });
-                  },
+              child: FutureBuilder(
+            future: AppwriteService().getSubject(),
+            builder: (BuildContext context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.data != null) {
+                  return ListView(
+                    children: snapshot.data!.map((course) {
+                      return CheckboxListTile(
+                        checkColor: Colors.white,
+                        activeColor: Color.fromARGB(255, 36, 132, 83),
+                        title: Text(course.get_name()),
+                        subtitle: Text(course.get_name_master().get_name()),
+                        value: selectedCourses[course] ?? false,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            selectedCourses[course] = value ?? false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              } else {
+                return Column(
+                  children: [
+                    Text("${snapshot.connectionState}"),
+                    CircularProgressIndicator(),
+                  ],
                 );
-              }).toList(),
-            ),
-          ),
+              }
+            },
+          )),
           Divider(
             color: Color.fromARGB(255, 36, 132, 83),
             endIndent: 20,
@@ -99,7 +118,7 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
 // }
 
 // class _selectSubjectesState extends State<selectSubjectesStudent> {
- 
+
 //   final Map<String, bool> selectedCourses = {};
 //   @override
 //   void initState() {
@@ -160,5 +179,3 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
 //     );
 //   }
 // }
-
-
