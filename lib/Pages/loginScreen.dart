@@ -10,11 +10,26 @@ class _LoginPageState extends State<LoginPage> {
   final services = AppwriteService();
   TextEditingController _numControllaer = TextEditingController();
   TextEditingController _passwordControllaer = TextEditingController();
+  String acc = "master";
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> args =
+      ModalRoute
+          .of(context)
+          ?.settings
+          .arguments as Map<String, dynamic>;
+      acc = args["acc"];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    acc = args["acc"];
     return Scaffold(
         body: Stack(
       children: [
@@ -59,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.grey,
                         ),
                         label: Text(
-                          'رقم القيد',
+                          acc=="student"?'رقم القيد':"رقم الهاتف",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 40, 88, 54),
@@ -131,6 +146,27 @@ class _LoginPageState extends State<LoginPage> {
                                         '/Student-Screen',
                                         arguments: student,
                                         (Route<dynamic> route) => false);
+                                  }
+                                }
+                              }else{
+                                final master =
+                                await services.getMaster(unvNum);
+                                if (int.parse(_numControllaer.text) ==
+                                    master.get_phone() &&
+                                    _passwordControllaer.text ==
+                                        master.get_pass()) {
+                                  if (master.get_subject().isEmpty) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/Select-Subjectes-Master',
+                                        arguments: master,
+                                            (Route<dynamic> route) => false);
+                                  } else {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/Master-Screen',
+                                        arguments: master,
+                                            (Route<dynamic> route) => false);
                                   }
                                 }
                               }

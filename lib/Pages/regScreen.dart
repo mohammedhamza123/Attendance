@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:it/services/appwrite_service.dart';
 
+import '../Models/Master.dart';
 import '../Models/lecture.dart';
 import '../Models/student.dart';
 
@@ -11,6 +13,9 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final acc = args["acc"];
     return Scaffold(
         body: Stack(
       children: [
@@ -71,7 +76,7 @@ class RegisterPage extends StatelessWidget {
                             color: Colors.grey,
                           ),
                           label: Text(
-                            'رقم القيد',
+                            acc == "student" ? 'رقم القيد' : "رقم الهاتف",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 40, 88, 54),
@@ -122,21 +127,43 @@ class RegisterPage extends StatelessWidget {
                         color: Color.fromARGB(255, 36, 132, 83),
                       ),
                       child: TextButton(
-                        onPressed: () {
-                          if (_nameControllaer.text.isNotEmpty &&
-                              _numControllaer.text.isEmpty &&
-                              _passwordControllaer.text.isNotEmpty &&
-                              _password2Controllaer.text.isNotEmpty) {
-                            if (_passwordControllaer.text ==
-                                _password2Controllaer.text) {
-                              Student S = Student(
-                                  // masterList.length,
-                                  int.parse(_numControllaer.text),
-                                  _nameControllaer.text,
-                                  _passwordControllaer.text);
-                              studentList.add(S);
-                              Navigator.pushNamedAndRemoveUntil(context,
-                                  '/student', (Route<dynamic> route) => false);
+                        onPressed: () async {
+                          if (acc == "student") {
+                            if (_password2Controllaer.text.isNotEmpty &&
+                                _numControllaer.text.isNotEmpty) {
+                              if (_passwordControllaer.text ==
+                                  _password2Controllaer.text) {
+                                Student S = Student(
+                                    // masterList.length,
+                                    "",
+                                    int.parse(_numControllaer.text),
+                                    _nameControllaer.text,
+                                    _passwordControllaer.text);
+                                final std =
+                                    await AppwriteService().postStudent(S);
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/Select-Subjectes-Student',
+                                    arguments: std,
+                                    (Route<dynamic> route) => false);
+                              }
+                            }
+                          } else if (acc == "master") {
+                            if (_password2Controllaer.text.isNotEmpty &&
+                                _numControllaer.text.isNotEmpty) {
+                              if (_passwordControllaer.text ==
+                                  _password2Controllaer.text) {
+                                Master S = Master(
+                                    int.parse(_numControllaer.text),
+                                    _nameControllaer.text,
+                                    _passwordControllaer.text,
+                                    "");
+                                await AppwriteService().postMaster(S);
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/Select-Subjectes-Master',
+                                    (Route<dynamic> route) => false);
+                              }
                             }
                           }
                         },

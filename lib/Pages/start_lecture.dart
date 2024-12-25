@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:it/Models/lecture.dart';
 
+import '../services/appwrite_service.dart';
+
 class StartLecture extends StatefulWidget {
   const StartLecture({super.key});
 
@@ -9,10 +11,35 @@ class StartLecture extends StatefulWidget {
 }
 
 class _StartLectureState extends State<StartLecture> {
+  Lecture? lec;
+  String acc = "master";
+
+  @override
+  void initState() {
+    super.initState();
+    // Schedule the callback after the first frame.
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      final lec = args["lec"];
+      acc = args["acc"];
+      setState(() {});
+      await _updateList(lec.id);
+      setState(() {});
+    });
+    setState(() {});
+  }
+
+  // The function to update the list
+  Future<void> _updateList(String id) async {
+    setState(() {});
+    lec = await AppwriteService().getLecture(id);
+    print(lec.toString());
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Lecture lec = ModalRoute.of(context)?.settings.arguments as Lecture;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 36, 132, 83),
@@ -38,14 +65,14 @@ class _StartLectureState extends State<StartLecture> {
             child: Column(
               children: [
                 Text(
-                  'اسم المادة : ' + lec.subjectName,
+                  'اسم المادة : ' + "${lec?.subjectName}",
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'اسم المحاضر : ' + lec.masterName,
+                  'اسم المحاضر : ' + "${lec?.masterName}",
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
@@ -59,21 +86,21 @@ class _StartLectureState extends State<StartLecture> {
                   height: 10,
                 ),
                 Text(
-                  'عنوان المحاضرة : ' + lec.title,
+                  'عنوان المحاضرة : ' + "${lec?.title}",
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'رقم القاعة : ' + lec.hallNumber,
+                  'رقم القاعة : ' + "${lec?.hallNumber}",
                   style: TextStyle(fontSize: 18),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  'كود تسجيل الحضور : ' + lec.code.toString(),
+                  'كود تسجيل الحضور : ' + "${lec?.code}",
                   style: TextStyle(fontSize: 18),
                 ),
               ],
@@ -82,28 +109,33 @@ class _StartLectureState extends State<StartLecture> {
           const SizedBox(
             height: 10,
           ),
-          Container(
-            padding: EdgeInsets.only(top: 15, bottom: 15),
-            decoration: BoxDecoration(color: Color.fromARGB(255, 36, 132, 83)),
-            child: Text(
-              textAlign: TextAlign.center,
-              'اسماء الطلبة الحاضرون',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
+          acc == "master"
+              ? Container(
+                  padding: EdgeInsets.only(top: 15, bottom: 15),
+                  decoration:
+                      BoxDecoration(color: Color.fromARGB(255, 36, 132, 83)),
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    'اسماء الطلبة الحاضرون',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
+              : Container(),
           const SizedBox(
             height: 10,
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: studentList.length,
-              itemBuilder: (context, index) => ListTile(
-                title: Text(studentList[index].get_name()),
-                subtitle: Text(DateTime.now().toString()),
-                trailing: Text(studentList.length.toString()),
-              ),
-            ),
-          ),
+          acc == "master"
+              ? Expanded(
+                  child: ListView.builder(
+                    itemCount: lec?.student.length,
+                    itemBuilder: (context, index) => ListTile(
+                      title: Text("${lec?.student[index].get_name()}"),
+                      subtitle: Text(DateTime.now().toString()),
+                      trailing: Text("${lec?.student.length.toString()}"),
+                    ),
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

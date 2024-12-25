@@ -2,11 +2,14 @@
 import 'package:it/Models/Master.dart';
 
 class Subject {
+  String id;
   String _code;
   String _name;
   Master _nameMaster;
   int _numUnites = 0;
-  Subject(this._code, this._name, this._numUnites, this._nameMaster);
+
+  Subject(this.id, this._code, this._name, this._numUnites, this._nameMaster);
+
   int get_numUnites() {
     return _numUnites;
   }
@@ -21,5 +24,20 @@ class Subject {
 
   Master get_name_master() {
     return _nameMaster;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "\$id": id,
+      "code": _code,
+      "name": _name,
+      "nameMaster": _nameMaster.get_name(),
+      "numUnites": _numUnites
+    };
+  }
+
+    factory Subject.fromMap(Map<String, dynamic> e) {
+    return Subject(
+        e["\$id"], e["code"], e["name"], e["numUnites"], Master(00,e["nameMaster"],"00",""));
   }
 }

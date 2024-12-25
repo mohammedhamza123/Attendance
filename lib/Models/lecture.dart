@@ -4,16 +4,32 @@ import 'package:it/Models/student.dart';
 import 'package:it/Models/subject.dart';
 
 class Lecture {
-  int id;
+  String id;
   int code;
   String hallNumber;
   String subjectName;
   String title;
   String masterName;
   List<Student> student = [];
+  DateTime lectureDate;
 
-  Lecture(this.id,this.code, this.hallNumber, this.subjectName, this.masterName,
-      this.title);
+  Lecture(this.id, this.code, this.hallNumber, this.title,this.masterName, this.subjectName, this.lectureDate);
+
+  factory Lecture.fromMap(Map<String, dynamic> e) {
+    final Map<String, dynamic> data = e["data"];
+    print(e);
+    return Lecture(
+      e["\$id"],
+      data["code_lectuer"],
+      data["hallNumber"],
+      data["titel"],
+      data["name_master"],
+      data['subject']["name"] ?? "",
+      // data["students"],
+      // data["lecture_date"],
+      DateTime.now(),
+    );
+  }
 }
 
 List<Student> studentList = [];

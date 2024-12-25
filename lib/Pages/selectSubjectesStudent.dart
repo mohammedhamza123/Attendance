@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:it/Models/lecture.dart';
 import 'package:it/services/appwrite_service.dart';
 
 import '../Models/student.dart';
@@ -15,6 +13,25 @@ class selectSubjectesStudent extends StatefulWidget {
 
 class _selectSubjectesState extends State<selectSubjectesStudent> {
   final Map<Subject, bool> selectedCourses = {};
+  List<Subject> listSubjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Schedule the callback after the first frame.
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await _updateList();
+    });
+
+    setState(() {});
+  }
+
+  // The function to update the list
+  Future<void> _updateList() async {
+    listSubjects = await AppwriteService().getSubject();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,40 +61,23 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
             thickness: 2,
           ),
           Expanded(
-              child: FutureBuilder(
-            future: AppwriteService().getSubject(),
-            builder: (BuildContext context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.data != null) {
-                  return ListView(
-                    children: snapshot.data!.map((course) {
-                      return CheckboxListTile(
-                        checkColor: Colors.white,
-                        activeColor: Color.fromARGB(255, 36, 132, 83),
-                        title: Text(course.get_name()),
-                        subtitle: Text(course.get_name_master().get_name()),
-                        value: selectedCourses[course] ?? false,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            selectedCourses[course] = value ?? false;
-                          });
-                        },
-                      );
-                    }).toList(),
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              } else {
-                return Column(
-                  children: [
-                    Text("${snapshot.connectionState}"),
-                    CircularProgressIndicator(),
-                  ],
+            child: ListView(
+              children: listSubjects.map((course) {
+                return CheckboxListTile(
+                  checkColor: Colors.white,
+                  activeColor: Color.fromARGB(255, 36, 132, 83),
+                  title: Text(course.get_name()),
+                  subtitle: Text(course.get_name_master().get_name()),
+                  value: selectedCourses[course] ?? false,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      selectedCourses[course] = value ?? false;
+                    });
+                  },
                 );
-              }
-            },
-          )),
+              }).toList(),
+            ),
+          ),
           Divider(
             color: Color.fromARGB(255, 36, 132, 83),
             endIndent: 20,
@@ -91,12 +91,13 @@ class _selectSubjectesState extends State<selectSubjectesStudent> {
                 color: Color.fromARGB(255, 36, 132, 83),
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             child: TextButton(
-              onPressed: () {
+              onPressed: () async {
                 List<Subject> chosenCourses = selectedCourses.entries
                     .where((entry) => entry.value)
                     .map((entry) => entry.key)
                     .toList();
                 user.add_subject(chosenCourses);
+                await AppwriteService().updateStudent(user);
                 Navigator.popAndPushNamed(context, '/Student-Screen',
                     arguments: user);
               },

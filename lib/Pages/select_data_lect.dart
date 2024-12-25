@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:it/Models/lecture.dart';
 import 'package:flutter/material.dart';
+import 'package:it/services/appwrite_service.dart';
 import 'dart:math';
 
 import '../Models/subject.dart';
@@ -10,13 +11,17 @@ class carts extends StatefulWidget {
     super.key,
     required this.sub,
   });
+
   final Subject sub;
+
   @override
   State<carts> createState() => _MyWidgetState();
 }
 
 class _MyWidgetState extends State<carts> {
   int lectureCode = 0;
+  final TextEditingController _numLectureController = TextEditingController();
+  final TextEditingController _titelLectureController = TextEditingController();
 
   final List<String> cLass = [
     'L1',
@@ -30,11 +35,9 @@ class _MyWidgetState extends State<carts> {
     'L9',
   ];
   String? selectedValue;
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _numLectureController = TextEditingController();
-    final TextEditingController _titelLectureController =
-        TextEditingController();
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20.0, 10, 0),
       child: Container(
@@ -65,9 +68,9 @@ class _MyWidgetState extends State<carts> {
                   ),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                    width: 2,
-                    color: Color.fromARGB(255, 36, 132, 83),
-                  )),
+                        width: 2,
+                        color: Color.fromARGB(255, 36, 132, 83),
+                      )),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 2, color: Colors.black),
                   ),
@@ -90,9 +93,9 @@ class _MyWidgetState extends State<carts> {
                   ),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                    width: 2,
-                    color: Color.fromARGB(255, 36, 132, 83),
-                  )),
+                        width: 2,
+                        color: Color.fromARGB(255, 36, 132, 83),
+                      )),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 2, color: Colors.black),
                   ),
@@ -145,20 +148,21 @@ class _MyWidgetState extends State<carts> {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         lectureCode = Random().nextInt(900000) + 100000;
                         Lecture lec = Lecture(
-                            int.parse(_numLectureController.text),
+                            "",
                             lectureCode,
-                            selectedValue ?? '',
+                            selectedValue ?? "",
                             widget.sub.get_name(),
                             widget.sub.get_name_master().get_name(),
-                            _titelLectureController.text);
-
+                            widget.sub.id,
+                            DateTime.now());
+                        lec = await AppwriteService().postLecture(lec);
                         Navigator.pushNamed(
                           context,
                           '/Start-Lecture',
-                          arguments: lec,
+                          arguments: {"acc": "master", "lec": lec},
                         );
                       },
                       child: Text(
