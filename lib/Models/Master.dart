@@ -2,12 +2,14 @@
 import 'package:it/Models/subject.dart';
 
 class Master {
+  String id;
   int _phone;
   String _name;
   String _password;
   List<Subject> _subjectes = [];
 
-  Master( this._phone, this._name, this._password);
+  Master(this._phone, this._name, this._password, this.id);
+
   int get_phone() {
     return _phone;
   }
@@ -30,5 +32,13 @@ class Master {
 
   List get_subject() {
     return _subjectes;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'phoneNumber': _phone,
+      "name": _name,
+      "password": _password,
+    };
   }
 }

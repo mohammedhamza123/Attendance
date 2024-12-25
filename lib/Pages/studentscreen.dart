@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:core';
 
-import 'package:it/Models/lecture.dart';
+import 'package:flutter/material.dart';
+import 'package:it/services/appwrite_service.dart';
+
+import '../Models/lecture.dart';
+import '../Models/student.dart';
 
 class StudentScreen extends StatefulWidget {
   @override
@@ -9,14 +13,12 @@ class StudentScreen extends StatefulWidget {
 
 class _StudentScreenState extends State<StudentScreen> {
   TextEditingController codeController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
 
   bool isAttendanceSuccessful = false;
 
   @override
   Widget build(BuildContext context) {
     final Student user = ModalRoute.of(context)!.settings.arguments as Student;
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -52,8 +54,173 @@ class _StudentScreenState extends State<StudentScreen> {
           ),
         ),
         body: TabBarView(children: [
-          Center(
-            child: Text("لا يوجد محاضارات في الوقت الحالي"),
+          Column(
+            children: [
+              FutureBuilder(
+                future: AppwriteService().getLectureDocs(user.get_subject()),
+                builder: (BuildContext context, snapshot) {
+                  if (snapshot.data != null) {
+                    final data = snapshot.data!;
+                    return Flexible(
+                      child: ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    // color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                    border: Border.all(
+                                      color: Color.fromARGB(255, 36, 132, 83),
+                                      width: 2.0,
+                                    )),
+                                child: ListTile(
+                                  title: Text(
+                                      "${data[index].data["titel"]}:${data[index].data["subject"]["name"]}"),
+                                  subtitle: Text(
+                                      "${data[index].data["name_master"]}:${data[index].data["hallNumber"]}"),
+                                  trailing: IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                  "تسجيل الحضور",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 20),
+                                                ),
+                                                content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      'هل تريد تسجيل الحضور \n(${user.get_subject_where_id(data[index].data["subject"]["code"]).get_name()})\n',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 18),
+                                                    ),
+                                                    TextField(
+                                                      controller:
+                                                          codeController,
+                                                    )
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text(
+                                                        'الغاء',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 18),
+                                                      )),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        if (codeController.text
+                                                                .trim()
+                                                                .toString() ==
+                                                            data[index]
+                                                                .data[
+                                                                    "code_lectuer"]
+                                                                .toString()) {
+                                                          final Lecture lec =
+                                                              Lecture.fromMap(
+                                                                  data[index]
+                                                                      .toMap());
+                                                          if (data[index].data[
+                                                                  "students"] !=
+                                                              null) {
+                                                            data[index].data["students"].map((e){
+                                                              lec.student.add(Student.fromMap(e));
+                                                            });
+                                                          }
+                                                          lec.student.add(user);
+                                                          AppwriteService()
+                                                              .updateLecture(
+                                                                  lec);
+                                                          Navigator
+                                                              .pushReplacementNamed(
+                                                                  context,
+                                                                  '/Start-Lecture',
+                                                                  arguments: {
+                                                                "acc":
+                                                                    "student",
+                                                                "lec": lec
+                                                              });
+                                                        } else {
+                                                          var snackBar =
+                                                              SnackBar(
+                                                            content: Text(
+                                                              // 'لم يتم تسجيل حضورك ',
+                                                              "${data[index].data["code_lectuer"]}",
+                                                              style: TextStyle(
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontSize: 16),
+                                                            ),
+                                                            backgroundColor:
+                                                                Colors.red,
+                                                            behavior:
+                                                                SnackBarBehavior
+                                                                    .floating,
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .all(16.0),
+                                                          );
+
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  snackBar);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                        "تأكيد",
+                                                        style: TextStyle(
+                                                            color: Colors.green,
+                                                            fontSize: 18),
+                                                      )),
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      icon: Icon(
+                                        Icons.done,
+                                        color: Colors.green,
+                                      )),
+                                ),
+                              ),
+                            );
+                            // return LectureListItem(
+                            //   hallNumber: data[index].data["hallNumber"],
+                            //   lectureNumber: "",
+                            //   lectureTitle: data[index].data["titel"],
+                            //   subjectTeacher: data[index].data["name_master"],
+                            // );
+                          }),
+                    );
+                  } else if (snapshot.data == []) {
+                    return Center(
+                      child: Text("لا يوجد محاضارات في الوقت الحالي"),
+                    );
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ],
           ),
           Column(
             children: [
@@ -166,7 +333,11 @@ class _StudentScreenState extends State<StudentScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
                   child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, "/Select-Subjectes-Student",
+                            arguments: user);
+                      },
                       child: Text(
                         "اضافة مادة جديدة",
                         style: TextStyle(color: Colors.white),

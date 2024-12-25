@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:it/Models/lecture.dart';
+import '../Models/Master.dart';
+import '../Models/subject.dart';
+import '../services/appwrite_service.dart';
 
 class selectSubjectesMaster extends StatefulWidget {
   const selectSubjectesMaster({super.key});
@@ -10,7 +11,27 @@ class selectSubjectesMaster extends StatefulWidget {
 }
 
 class _selectSubjectesState extends State<selectSubjectesMaster> {
-  final Map<subject, bool> selectedCourses = {};
+  final Map<Subject, bool> selectedCourses = {};
+  List<Subject> listSubjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Schedule the callback after the first frame.
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      await _updateList();
+    });
+
+    setState(() {});
+  }
+
+  // The function to update the list
+  Future<void> _updateList() async {
+    listSubjects = await AppwriteService().getSubject();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final Master master = ModalRoute.of(context)!.settings.arguments as Master;
@@ -40,7 +61,7 @@ class _selectSubjectesState extends State<selectSubjectesMaster> {
           ),
           Expanded(
             child: ListView(
-              children: Subjects.map((course) {
+              children: listSubjects.map((course) {
                 return CheckboxListTile(
                   checkColor: Colors.white,
                   activeColor: Color.fromARGB(255, 36, 132, 83),
@@ -70,18 +91,18 @@ class _selectSubjectesState extends State<selectSubjectesMaster> {
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             child: TextButton(
               onPressed: () {
-                List<subject> chosenCourses = selectedCourses.entries
+                List<Subject> chosenCourses = selectedCourses.entries
                     .where((entry) => entry.value)
                     .map((entry) => entry.key)
                     .toList();
                 master.add_subject(chosenCourses);
+                AppwriteService().updateMaster(master);
                 Navigator.popAndPushNamed(context, '/Master-Screen',
                     arguments: master);
               },
               child: Text(
                 'التالي',
-                style: TextStyle(color: Colors.white),
-              ),
+              style: TextStyle(color: Colors.white),),
             ),
           ),
         ]));

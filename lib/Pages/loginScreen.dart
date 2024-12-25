@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:it/Models/lecture.dart';
+import 'package:it/services/appwrite_service.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -7,10 +7,29 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final services = AppwriteService();
   TextEditingController _numControllaer = TextEditingController();
   TextEditingController _passwordControllaer = TextEditingController();
+  String acc = "master";
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final Map<String, dynamic> args =
+      ModalRoute
+          .of(context)
+          ?.settings
+          .arguments as Map<String, dynamic>;
+      acc = args["acc"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    acc = args["acc"];
     return Scaffold(
         body: Stack(
       children: [
@@ -55,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.grey,
                         ),
                         label: Text(
-                          'رقم القيد',
+                          acc=="student"?'رقم القيد':"رقم الهاتف",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 40, 88, 54),
@@ -103,28 +122,51 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Center(
                       child: TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_numControllaer.text.isNotEmpty &&
                                 _passwordControllaer.text.isNotEmpty) {
-                              for (var i = 0; i < studentList.length; i++) {
+                              final unvNum = int.parse(_numControllaer.text);
+                              if (args["acc"] == "student") {
+                                final student =
+                                    await services.getStudent(unvNum);
+                                print(student.get_unvNum());
                                 if (int.parse(_numControllaer.text) ==
-                                        studentList[i].get_unvNum() &&
+                                        student.get_unvNum() &&
                                     _passwordControllaer.text ==
-                                        studentList[i].get_pass()) {
-                                  if (studentList[i].get_subject().isEmpty) {
+                                        student.get_pass()) {
+                                  if (student.get_subject().isEmpty) {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
                                         '/Select-Subjectes-Student',
-                                        arguments: studentList[i],
+                                        arguments: student,
                                         (Route<dynamic> route) => false);
-                                    break;
                                   } else {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
                                         '/Student-Screen',
-                                        arguments: studentList[i],
+                                        arguments: student,
                                         (Route<dynamic> route) => false);
-                                    break;
+                                  }
+                                }
+                              }else{
+                                final master =
+                                await services.getMaster(unvNum);
+                                if (int.parse(_numControllaer.text) ==
+                                    master.get_phone() &&
+                                    _passwordControllaer.text ==
+                                        master.get_pass()) {
+                                  if (master.get_subject().isEmpty) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/Select-Subjectes-Master',
+                                        arguments: master,
+                                            (Route<dynamic> route) => false);
+                                  } else {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/Master-Screen',
+                                        arguments: master,
+                                            (Route<dynamic> route) => false);
                                   }
                                 }
                               }
