@@ -83,7 +83,7 @@ class AppwriteService {
           "password": s.get_pass(),
           "univNum": s.get_unvNum()
         });
-    return Student.fromMap(result.data);
+    return Student(result.$id,result.data["univNum"],result.data["name"],result.data["password"]);
   }
 
   Future<Master> getMaster(int phoneNumber) async {
@@ -113,13 +113,14 @@ class AppwriteService {
         data: {'subject': subjects});
   }
 
-  Future<void> postMaster(Master s) async {
+  Future<Master> postMaster(Master s) async {
     Databases databases = Databases(client);
     Document result = await databases.createDocument(
         databaseId: dbId,
         collectionId: masterCollectionId,
         documentId: uuid.v4(),
         data: s.toMap());
+    return Master(result.data["phoneNumber"],result.data["name"],result.data["password"],result.$id);
   }
 
 ////

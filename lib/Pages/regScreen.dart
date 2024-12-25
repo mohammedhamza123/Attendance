@@ -158,10 +158,10 @@ class RegisterPage extends StatelessWidget {
                                     _nameControllaer.text,
                                     _passwordControllaer.text,
                                     "");
-                                await AppwriteService().postMaster(S);
+                                final s = await AppwriteService().postMaster(S);
                                 Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    '/Select-Subjectes-Master',
+                                    '/Select-Subjectes-Master',arguments: s,
                                     (Route<dynamic> route) => false);
                               }
                             }
