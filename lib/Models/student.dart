@@ -47,7 +47,7 @@ class Student {
         return _subjectes[i];
       }
     }
-    return Subject("", "", "as", 0,Master(5, '', '', ''));
+    return Subject("", "", "as", 0, Master(5, '', '', ''));
   }
 
   factory Student.fromMap(data) {
@@ -55,11 +55,16 @@ class Student {
         data.data["password"]);
   }
 
-  Map<String,dynamic>toMap() {
+  factory Student.fromMapForLecture(data) {
+    return Student(
+        data["\$id"], data["univNum"], data["name"], data["password"]);
+  }
+
+  Map<String, dynamic> toMap() {
     return {
-      "univNum":get_unvNum(),
-      "name":_name,
-      "password":_password,
+      "univNum": get_unvNum(),
+      "name": _name,
+      "password": _password,
     };
   }
 }

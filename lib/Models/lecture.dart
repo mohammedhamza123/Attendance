@@ -13,22 +13,38 @@ class Lecture {
   List<Student> student = [];
   DateTime lectureDate;
 
-  Lecture(this.id, this.code, this.hallNumber, this.title,this.masterName, this.subjectName, this.lectureDate);
+  Lecture(this.id, this.code, this.hallNumber, this.title, this.masterName,
+      this.subjectName, this.lectureDate, this.student);
 
   factory Lecture.fromMap(Map<String, dynamic> e) {
     final Map<String, dynamic> data = e["data"];
-    print(e);
     return Lecture(
-      e["\$id"],
-      data["code_lectuer"],
-      data["hallNumber"],
-      data["titel"],
-      data["name_master"],
-      data['subject']["name"] ?? "",
-      // data["students"],
-      // data["lecture_date"],
-      DateTime.now(),
-    );
+        e["\$id"],
+        data["code_lectuer"],
+        data["hallNumber"],
+        data["titel"],
+        data["name_master"],
+        data['subject']["name"] ?? "",
+        // data["students"],
+        // data["lecture_date"],
+        DateTime.now(),
+        []);
+  }
+
+  factory Lecture.fromMapWithStudents(
+      Map<String, dynamic> e, List<Student> students) {
+    final Map<String, dynamic> data = e["data"];
+    return Lecture(
+        e["\$id"],
+        data["code_lectuer"],
+        data["hallNumber"],
+        data["titel"],
+        data["name_master"],
+        data['subject']["name"] ?? "",
+        // data["students"],
+        // data["lecture_date"],
+        DateTime.now(),
+        students);
   }
 }
 

@@ -26,18 +26,22 @@ class Subject {
     return _nameMaster;
   }
 
+  void set_name_master(Master m) {
+    _nameMaster = m;
+  }
+
   Map<String, dynamic> toMap() {
     return {
       "\$id": id,
       "code": _code,
-      "name": _name,
+    "name": _name,
       "nameMaster": _nameMaster.get_name(),
       "numUnites": _numUnites
     };
   }
 
-    factory Subject.fromMap(Map<String, dynamic> e) {
-    return Subject(
-        e["\$id"], e["code"], e["name"], e["numUnites"], Master(00,e["nameMaster"],"00",""));
+  factory Subject.fromMap(Map<String, dynamic> e) {
+    return Subject(e["\$id"], e["code"], e["name"], e["numUnites"],
+        Master(00, e["nameMaster"], "00", ""));
   }
 }

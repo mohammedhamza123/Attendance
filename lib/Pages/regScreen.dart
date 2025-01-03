@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:it/services/appwrite_service.dart';
 
 import '../Models/Master.dart';
-import '../Models/lecture.dart';
 import '../Models/student.dart';
 
 class RegisterPage extends StatelessWidget {

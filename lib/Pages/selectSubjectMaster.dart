@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import '../Models/Master.dart';
 import '../Models/subject.dart';
@@ -40,7 +41,7 @@ class _selectSubjectesState extends State<selectSubjectesMaster> {
           centerTitle: true,
           backgroundColor: Color.fromARGB(255, 36, 132, 83),
           title: Text(
-            'مرحبا ' + master.get_name(),
+            ' مرحبا أ.' + master.get_name(),
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
         ),
@@ -66,7 +67,7 @@ class _selectSubjectesState extends State<selectSubjectesMaster> {
                   checkColor: Colors.white,
                   activeColor: Color.fromARGB(255, 36, 132, 83),
                   title: Text(course.get_name()),
-                  subtitle: Text(course.get_name_master().get_name()),
+                  // subtitle: Text(course.get_name_master().get_name()),
                   value: selectedCourses[course] ?? false,
                   onChanged: (bool? value) {
                     setState(() {
@@ -90,19 +91,36 @@ class _selectSubjectesState extends State<selectSubjectesMaster> {
                 color: Color.fromARGB(255, 36, 132, 83),
                 borderRadius: BorderRadius.all(Radius.circular(20))),
             child: TextButton(
-              onPressed: () {
-                List<Subject> chosenCourses = selectedCourses.entries
-                    .where((entry) => entry.value)
-                    .map((entry) => entry.key)
-                    .toList();
-                master.add_subject(chosenCourses);
-                AppwriteService().updateMaster(master);
-                Navigator.popAndPushNamed(context, '/Master-Screen',
-                    arguments: master);
+              onPressed: () async {
+                try {
+                  List<Subject> chosenCourses = selectedCourses.entries
+                      .where((entry) => entry.value)
+                      .map((entry) => entry.key)
+                      .toList();
+                  for (int i = 0; i < chosenCourses.length; i++) {
+                    Subject course = chosenCourses[i];
+                    course.set_name_master(master);
+                    await AppwriteService().updateSubject(course);
+                  }
+                  master.add_subject(chosenCourses);
+                  await AppwriteService().updateMaster(master);
+                  Navigator.popAndPushNamed(context, '/Master-Screen',
+                      arguments: master);
+                } on AppwriteException catch (e) {
+                  if (e.code == 404) {
+                    Navigator.popAndPushNamed(context, '/Master-Screen',
+                        arguments: master);
+                  } else {
+                    SnackBar s =
+                        SnackBar(content: Text("حدث خطأ لم يتم تسجيل المواد"));
+                    ScaffoldMessenger.of(context).showSnackBar(s);
+                  }
+                }
               },
               child: Text(
                 'التالي',
-              style: TextStyle(color: Colors.white),),
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ]));

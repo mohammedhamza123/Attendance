@@ -43,7 +43,6 @@ class _MasterScreenState extends State<MasterScreen> {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/attendance.pdf');
     await file.writeAsBytes(await pdf.save());
-    print(directory.path);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("تم تصدير الحضور إلى ملف PDF: ${file.path}"),
       backgroundColor: Colors.green,

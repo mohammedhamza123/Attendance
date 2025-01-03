@@ -72,7 +72,6 @@ class AppwriteService {
   }
 
   Future<Student> postStudent(Student s) async {
-    print(s.toMap());
     Databases databases = Databases(client);
     Document result = await databases.createDocument(
         databaseId: dbId,
@@ -83,7 +82,8 @@ class AppwriteService {
           "password": s.get_pass(),
           "univNum": s.get_unvNum()
         });
-    return Student(result.$id,result.data["univNum"],result.data["name"],result.data["password"]);
+    return Student(result.$id, result.data["univNum"], result.data["name"],
+        result.data["password"]);
   }
 
   Future<Master> getMaster(int phoneNumber) async {
@@ -93,24 +93,35 @@ class AppwriteService {
       collectionId: masterCollectionId,
       queries: [
         //this is filter
+        // SELECT * MASTER WHERE phoneNumber = ?
         Query.equal("phoneNumber", [phoneNumber])
       ],
     );
     final map = result.documents.first.toMap()["data"];
-    return Master(map["phoneNumber"], map["name"], map["password"],
+    final m = Master(map["phoneNumber"], map["name"], map["password"],
         result.documents.first.$id);
+    List<Subject> subjects = List<Subject>.from(map["subject"].map((e) {
+      final s = Subject.fromMap(e);
+      return s;
+    }));
+    m.add_subject(subjects);
+    return m;
   }
 
   Future<void> updateMaster(Master s) async {
     Databases databases = Databases(client);
-    final subjects = s.get_subject().map((e) {
+    // final subjects = s.get_subject().map((e) {
+    //   return "${e.id}";
+    // }).toList();
+    List<String> subjectids = [];
+    subjectids = s.get_subject().map((e) {
       return "${e.id}";
     }).toList();
-    Document result = await databases.createDocument(
+    await databases.updateDocument(
         databaseId: dbId,
-        collectionId: studentCollectionId,
+        collectionId: masterCollectionId,
         documentId: s.id,
-        data: {'subject': subjects});
+        data: {'subject': subjectids});
   }
 
   Future<Master> postMaster(Master s) async {
@@ -120,10 +131,10 @@ class AppwriteService {
         collectionId: masterCollectionId,
         documentId: uuid.v4(),
         data: s.toMap());
-    return Master(result.data["phoneNumber"],result.data["name"],result.data["password"],result.$id);
+    return Master(result.data["phoneNumber"], result.data["name"],
+        result.data["password"], result.$id);
   }
 
-////
   Future<Lecture> postLecture(Lecture lec) async {
     Databases databases = Databases(client);
     Document result = await databases.createDocument(
@@ -141,20 +152,20 @@ class AppwriteService {
     return Lecture.fromMap(result.toMap());
   }
 
-  Future<List<Lecture>> getLectures(List<Subject> s) async {
-    Databases databases = Databases(client);
-    final subjects = s.map((e) {
-      return "${e.id}";
-    }).toList();
-    DocumentList result = await databases.listDocuments(
-        databaseId: dbId,
-        collectionId: lectureCollectionId,
-        queries: [
-          Query.equal("subject", subjects),
-          Query.equal("lecture_date", DateTime.now().day)
-        ]);
-    return result.documents.map((e) => Lecture.fromMap(e.toMap())).toList();
-  }
+  // Future<List<Lecture>> getLectures(List<Subject> s) async {
+  //   Databases databases = Databases(client);
+  //   final subjects = s.map((e) {
+  //     return "${e.id}";
+  //   }).toList();
+  //   DocumentList result = await databases.listDocuments(
+  //       databaseId: dbId,
+  //       collectionId: lectureCollectionId,
+  //       queries: [
+  //         Query.equal("subject", subjects),
+  //         Query.equal("lecture_date", DateTime.now().day)
+  //       ]);
+  //   return result.documents.map((e) => Lecture.fromMap(e.toMap())).toList();
+  // }
 
   Future<void> updateLecture(Lecture lec) async {
     Databases databases = Databases(client);
@@ -170,7 +181,7 @@ class AppwriteService {
 
   Future<void> deleteLecture(Lecture lec) async {
     Databases databases = Databases(client);
-    Document result = await databases.deleteDocument(
+    await databases.deleteDocument(
         databaseId: dbId,
         collectionId: lectureCollectionId,
         documentId: lec.id);
@@ -180,7 +191,13 @@ class AppwriteService {
     Databases databases = Databases(client);
     Document result = await databases.getDocument(
         databaseId: dbId, collectionId: lectureCollectionId, documentId: id);
-    return Lecture.fromMap(result.toMap());
+    List<Student> students =
+        List<Student>.from(result.data["students"].map((e) {
+      final s =
+          Student.fromMapForLecture(e); // Mapping the data to a Student object
+      return s;
+    }));
+    return Lecture.fromMapWithStudents(result.toMap(), students);
   }
 
   Future<List<Document>> getLectureDocs(List<Subject> s) async {
@@ -213,5 +230,16 @@ class AppwriteService {
       res.add(temp);
     }
     return res;
+  }
+
+  Future<void> updateSubject(Subject s) async {
+    Databases databases = Databases(client);
+    // Document result =
+    await databases.updateDocument(
+      databaseId: dbId,
+      collectionId: subjectCollectionId,
+      documentId: s.id,
+      data: s.toMap(),
+    );
   }
 }

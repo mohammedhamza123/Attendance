@@ -17,10 +17,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final Map<String, dynamic> args =
-      ModalRoute
-          .of(context)
-          ?.settings
-          .arguments as Map<String, dynamic>;
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       acc = args["acc"];
     });
   }
@@ -65,6 +62,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(left: 18.0, right: 18),
               child: ListView(
                 // mainAxisAlignment: MainAxisAlignment.center,
+
                 children: [
                   TextField(
                     controller: _numControllaer,
@@ -74,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.grey,
                         ),
                         label: Text(
-                          acc=="student"?'رقم القيد':"رقم الهاتف",
+                          acc == "student" ? 'رقم القيد' : "رقم الهاتف",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 40, 88, 54),
@@ -123,53 +121,67 @@ class _LoginPageState extends State<LoginPage> {
                     child: Center(
                       child: TextButton(
                           onPressed: () async {
-                            if (_numControllaer.text.isNotEmpty &&
-                                _passwordControllaer.text.isNotEmpty) {
-                              final unvNum = int.parse(_numControllaer.text);
-                              if (args["acc"] == "student") {
-                                final student =
-                                    await services.getStudent(unvNum);
-                                print(student.get_unvNum());
-                                if (int.parse(_numControllaer.text) ==
-                                        student.get_unvNum() &&
-                                    _passwordControllaer.text ==
-                                        student.get_pass()) {
-                                  if (student.get_subject().isEmpty) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        '/Select-Subjectes-Student',
-                                        arguments: student,
-                                        (Route<dynamic> route) => false);
-                                  } else {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        '/Student-Screen',
-                                        arguments: student,
-                                        (Route<dynamic> route) => false);
+                            try {
+                              if (_numControllaer.text.isNotEmpty &&
+                                  _passwordControllaer.text.isNotEmpty) {
+                                final unvNum = int.parse(_numControllaer.text);
+                                if (args["acc"] == "student") {
+                                  final student =
+                                      await services.getStudent(unvNum);
+                                  if (int.parse(_numControllaer.text) ==
+                                          student.get_unvNum() &&
+                                      _passwordControllaer.text ==
+                                          student.get_pass()) {
+                                    if (student.get_subject().isEmpty) {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/Select-Subjectes-Student',
+                                          arguments: student,
+                                          (Route<dynamic> route) => false);
+                                    } else {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/Student-Screen',
+                                          arguments: student,
+                                          (Route<dynamic> route) => false);
+                                    }
                                   }
-                                }
-                              }else{
-                                final master =
-                                await services.getMaster(unvNum);
-                                if (int.parse(_numControllaer.text) ==
-                                    master.get_phone() &&
-                                    _passwordControllaer.text ==
-                                        master.get_pass()) {
-                                  if (master.get_subject().isEmpty) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        '/Select-Subjectes-Master',
-                                        arguments: master,
-                                            (Route<dynamic> route) => false);
-                                  } else {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        '/Master-Screen',
-                                        arguments: master,
-                                            (Route<dynamic> route) => false);
+                                } else {
+                                  final master =
+                                      await services.getMaster(unvNum);
+                                  if (int.parse(_numControllaer.text) ==
+                                          master.get_phone() &&
+                                      _passwordControllaer.text ==
+                                          master.get_pass()) {
+                                    if (master.get_subject().isEmpty) {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/Select-Subjectes-Master',
+                                          arguments: master,
+                                          (Route<dynamic> route) => false);
+                                    } else {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          '/Master-Screen',
+                                          arguments: master,
+                                          (Route<dynamic> route) => false);
+                                    }
                                   }
                                 }
                               }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'فشل في تسجيل الدخول. يرجى التحقق من الرقم السري أو الرقم الجامعي.',
+                                    style: TextStyle(
+                                        color: Colors
+                                            .white), // White text on red background
+                                  ),
+                                  backgroundColor: Colors
+                                      .red, // Red background for the error
+                                ),
+                              );
                             }
                           },
                           child: Text(

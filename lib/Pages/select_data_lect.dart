@@ -68,9 +68,9 @@ class _MyWidgetState extends State<carts> {
                   ),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        width: 2,
-                        color: Color.fromARGB(255, 36, 132, 83),
-                      )),
+                    width: 2,
+                    color: Color.fromARGB(255, 36, 132, 83),
+                  )),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 2, color: Colors.black),
                   ),
@@ -93,9 +93,9 @@ class _MyWidgetState extends State<carts> {
                   ),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        width: 2,
-                        color: Color.fromARGB(255, 36, 132, 83),
-                      )),
+                    width: 2,
+                    color: Color.fromARGB(255, 36, 132, 83),
+                  )),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 2, color: Colors.black),
                   ),
@@ -157,7 +157,7 @@ class _MyWidgetState extends State<carts> {
                             widget.sub.get_name(),
                             widget.sub.get_name_master().get_name(),
                             widget.sub.id,
-                            DateTime.now());
+                            DateTime.now(), []);
                         lec = await AppwriteService().postLecture(lec);
                         Navigator.pushNamed(
                           context,
